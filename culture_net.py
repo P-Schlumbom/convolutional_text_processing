@@ -187,57 +187,68 @@ def generate_from_seed(seed, model, max_length=32):
     out_text = matrix_to_text(seed_matrix)
     return out_text
 
-ship_names = read_culture_names()
-max_name_length = max([len(a) for a in ship_names])
-id = 5
-print(ship_names[:25])
-print(max_name_length)
-test = text_to_matrix(ship_names[id], length=None)
-ttext = matrix_to_text(test)
-print("{}\n{}".format(ship_names[id], ttext))
-#plt.imshow(test)
-#plt.show()
-"""x, y = gen_intermediate_name_matrices(test)
-for i in range(len(x)):
-    plt.subplot(1, 3, 1)
-    plt.imshow(test)
-    plt.subplot(1, 3, 2)
-    plt.imshow(x[i])
-    plt.subplot(1, 3, 3)
-    yout = np.reshape(y[i], (y[i].shape[0], 1))
-    plt.imshow(yout)
-    plt.show()"""
+if __name__ == '__main__':
+    ship_names = read_culture_names()
+    max_name_length = max([len(a) for a in ship_names])
+    id = 5
+    print(ship_names[:25])
+    print(max_name_length)
+    test = text_to_matrix(ship_names[id], length=None)
+    ttext = matrix_to_text(test)
+    print("{}\n{}".format(ship_names[id], ttext))
+    #plt.imshow(test)
+    #plt.show()
+    """x, y = gen_intermediate_name_matrices(test)
+    for i in range(len(x)):
+        plt.subplot(1, 3, 1)
+        plt.imshow(test)
+        plt.subplot(1, 3, 2)
+        plt.imshow(x[i])
+        plt.subplot(1, 3, 3)
+        yout = np.reshape(y[i], (y[i].shape[0], 1))
+        plt.imshow(yout)
+        plt.show()"""
 
-ship_names = read_culture_names()
-cutoff = 1000
-max_name_length = max([len(a) for a in ship_names])
-x, y = gen_dataset(ship_names[:2], length=max_name_length)
-model = basic_conv_model(x[0].shape, y[0].shape[0])
-#model = train_model(model, (x, y), epochs=50)
-#model = train_model(model, ship_names, epochs=20)
-#save_model(model, "models_test.h5")
-#model = load_model("models_test.h5")
+    ship_names = read_culture_names()
+    cutoff = 1000
+    max_name_length = max([len(a) for a in ship_names])
+    x, y = gen_dataset(ship_names[:2], length=max_name_length)
+    model = basic_conv_model(x[0].shape, y[0].shape[0])
+    #model = train_model(model, (x, y), epochs=50)
+    #model = train_model(model, ship_names, epochs=20)
+    #save_model(model, "models_test.h5")
+    #model = load_model("models_test.h5")
 
-model = load_model("models/200_epoch_deep.h5")
+    model = load_model("models/200_epoch_deep.h5")
 
-max_name_length = max([len(a) for a in ship_names[:cutoff]])
-test = text_to_matrix("ROU", length=max_name_length, mark_end=False)
-print(generate_from_seed("ROU", model, max_name_length))
-"""for i in range(32):
-    new = np.asarray([np.reshape(test, (test.shape[0], test.shape[1], 1))])
-    predicted = np.zeros((new.shape[1],))
-    pred_index = np.argmax(model.predict(new))
-    #print(model.predict(new))
-    #print(pred_index)
-    predicted[pred_index] = 1
-    #print(new.shape, predicted.shape)
-    test[:, i+3] = predicted
-    print(matrix_to_text(test), len(matrix_to_text(test)))"""
-#plt.imshow(test)
-#plt.show()
-run_demo = True
-while run_demo:
-    seed = input("Enter seed:\n")
-    print('-----\n{}\n-----'.format(generate_from_seed(seed, model, max_name_length)))
-    if 'n' in input('Try another? y/n\n'):
-        run_demo=False
+    max_name_length = max([len(a) for a in ship_names[:cutoff]])
+    test = text_to_matrix("ROU", length=max_name_length, mark_end=False)
+    print(generate_from_seed("ROU", model, max_name_length))
+    """for i in range(32):
+        new = np.asarray([np.reshape(test, (test.shape[0], test.shape[1], 1))])
+        predicted = np.zeros((new.shape[1],))
+        pred_index = np.argmax(model.predict(new))
+        #print(model.predict(new))
+        #print(pred_index)
+        predicted[pred_index] = 1
+        #print(new.shape, predicted.shape)
+        test[:, i+3] = predicted
+        print(matrix_to_text(test), len(matrix_to_text(test)))"""
+    #plt.imshow(test)
+    #plt.show()
+    run_demo = True
+    while run_demo:
+        seed = input("Enter seed:\n")
+        print('-----\n{}\n-----'.format(generate_from_seed(seed, model, max_name_length)))
+        if 'n' in input('Try another? y/n\n'):
+            run_demo=False
+    # need to clean this jazz up all nice-like
+
+    names_csv = "type;name\n"
+    for name in ship_names:
+        title = name.split()[0]
+        true_name = " ".join(name.split()[1:])
+        names_csv += title + ';' + true_name + '\n'
+
+    with open("culture_name_table.csv", 'w') as f:
+        f.write(names_csv)
